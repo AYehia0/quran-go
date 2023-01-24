@@ -16,3 +16,9 @@ type Ayah struct {
 	Verse         int    `json:"chapter"`
 	Page          int    `json:"page"`
 }
+
+type Bookmark struct {
+	CurrentPage int   `json:"currentPage"`
+	SavedPages  []int `json:"savedPages"`
+	SavedAyaht  []int `json:"savedAyaht"`
+}
