@@ -8,18 +8,16 @@ import (
 
 const (
 	SURAH_NUM = 114 // the number of surahs in the holy quran
-	LANG      = 0   // AR -> 0, EN -> 1
+	LANG      = 1   // AR -> 0, EN -> 1
 )
 
 // get all the ayaht in a particular page by scanning the pages for a certain page number
-func AyahtInPage(surahs *[][]Surah, pageNum int) []*Ayah {
-	ayaht := make([]*Ayah, 0)
+func AyahtInPage(surahs *[][]Surah, pageNum int) []Ayah {
+	ayaht := make([]Ayah, 0)
 	for _, surah := range *surahs {
 		for _, ayah := range surah[LANG].Ayaht {
 			if ayah.Page == pageNum {
-				ayaht = append(ayaht, &ayah)
-			} else {
-				break
+				ayaht = append(ayaht, ayah)
 			}
 		}
 	}
