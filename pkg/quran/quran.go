@@ -8,6 +8,7 @@ import (
 
 const (
 	SURAH_NUM = 114 // the number of surahs in the holy quran
+	PAGES     = 604 // the number of pages in the holy quran
 	LANG      = 1   // AR -> 0, EN -> 1
 )
 
@@ -22,6 +23,32 @@ func AyahtInPage(surahs *[][]Surah, pageNum int) []Ayah {
 		}
 	}
 	return ayaht
+}
+
+// return the left and right pages. (as a list)
+func GetPages(ayaht *[][]Surah, currentPage int) ([]Ayah, []Ayah) {
+
+	var leftPageNum, rightPageNum int
+
+	// check the boundries
+	// TODO: handle this !!
+	if currentPage > PAGES || currentPage < 1 {
+		return nil, nil
+	}
+
+	// check the page order
+	// if pagenum is even : left
+	if currentPage%2 == 0 {
+		leftPageNum = currentPage
+		rightPageNum = currentPage - 1
+	} else {
+		// if pagenum is odd : right
+		rightPageNum = currentPage
+		leftPageNum = currentPage + 1
+	}
+
+	return AyahtInPage(ayaht, leftPageNum), AyahtInPage(ayaht, rightPageNum)
+
 }
 
 func ParseQuranData(dataFilePath string) *[][]Surah {
