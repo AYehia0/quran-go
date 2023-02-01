@@ -9,25 +9,12 @@ import (
 	"github.com/charmbracelet/bubbles/viewport"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+	"github.com/muesli/reflow/wordwrap"
 )
 
 const (
 	padding  = 1
 	keyWidth = 80
-)
-
-var (
-	bubbleStyle = lipgloss.NewStyle().
-			PaddingLeft(0).
-			PaddingRight(0).
-			BorderStyle(lipgloss.NormalBorder())
-	inputStyle             = lipgloss.NewStyle().PaddingTop(0)
-	statusMessageInfoStyle = lipgloss.NewStyle().
-				Foreground(lipgloss.AdaptiveColor{Light: "#04B575", Dark: "#04B575"}).
-				Render
-	statusMessageErrorStyle = lipgloss.NewStyle().
-				Foreground(lipgloss.AdaptiveColor{Light: "#FF0000", Dark: "#FF0000"}).
-				Render
 )
 
 type TitleColor struct {
@@ -44,21 +31,30 @@ type ViewportModel struct {
 	TitleColor  TitleColor
 	IsActive    bool
 	HasBorders  bool
+	Direction   string
+	selected    bool
+}
+
+func min(a, b int) int {
+	if a < b {
+		return a
+	}
+	return b
 }
 
 // generateScreen generates the help text based on the title and entries.
 // generete the text which is going to be displayed in the viewport based on the title and the content
-func generateViewportText(title string, titleColor TitleColor, entries []quran.Ayah, width, height int) string {
+func generateViewportText(title string, titleColor TitleColor, entries []quran.Ayah, width, height int, dir string) string {
 	content := ""
 
 	for _, ayah := range entries {
 		text := lipgloss.NewStyle().
 			Bold(true).
 			Foreground(lipgloss.AdaptiveColor{Dark: "#ffffff", Light: "#000000"}).
-			Width(keyWidth).
 			Render(goarabic.RemoveTashkeel(ayah.Text))
 
-		row := lipgloss.JoinHorizontal(lipgloss.Top, goarabic.RemoveTashkeel(text))
+		// FIXME: warping the text to the half width isn't the best soultion, as it displays some werid text in AR
+		row := lipgloss.JoinHorizontal(lipgloss.Top, wordwrap.String(text, min(width/2, keyWidth)))
 		content += fmt.Sprintf("%s\n\n", row)
 	}
 
@@ -91,6 +87,7 @@ func New(
 	titleColor TitleColor,
 	borderColor lipgloss.AdaptiveColor,
 	entries []quran.Ayah,
+	dir string,
 ) ViewportModel {
 	viewPort := viewport.New(0, 0)
 	border := lipgloss.NormalBorder()
@@ -100,12 +97,12 @@ func New(
 	}
 
 	viewPort.Style = lipgloss.NewStyle().
-		// PaddingLeft(padding).
-		// PaddingRight(padding).
+		PaddingLeft(padding).
+		PaddingRight(padding).
 		Border(border).
 		BorderForeground(borderColor)
 
-	viewPort.SetContent(generateViewportText(title, titleColor, entries, 0, 0))
+	viewPort.SetContent(generateViewportText(title, titleColor, entries, 0, 0, ""))
 
 	return ViewportModel{
 		Viewport:    viewPort,
@@ -115,6 +112,7 @@ func New(
 		HasBorders:  borderless,
 		BorderColor: borderColor,
 		TitleColor:  titleColor,
+		Direction:   dir,
 	}
 }
 
@@ -123,7 +121,11 @@ func (b *ViewportModel) SetSize(w, h int) {
 	b.Viewport.Width = w - b.Viewport.Style.GetHorizontalFrameSize()
 	b.Viewport.Height = h - b.Viewport.Style.GetVerticalFrameSize()
 
-	b.Viewport.SetContent(generateViewportText(b.PageTitle, b.TitleColor, b.Entries, b.Viewport.Width, b.Viewport.Height))
+	UpdateText(b)
+}
+
+func UpdateText(b *ViewportModel) {
+	b.Viewport.SetContent(generateViewportText(b.PageTitle, b.TitleColor, b.Entries, b.Viewport.Width, b.Viewport.Height, b.Direction))
 }
 
 // SetBorderColor sets the current color of the border.
@@ -145,15 +147,15 @@ func (b *ViewportModel) GotoTop() {
 func (b *ViewportModel) SetTitleColor(color TitleColor) {
 	b.TitleColor = color
 
-	b.Viewport.SetContent(generateViewportText(b.PageTitle, b.TitleColor, b.Entries, b.Viewport.Width, b.Viewport.Height))
+	UpdateText(b)
 }
 
-// SetBorderless sets weather or not to show the border.
-func (b *ViewportModel) SetBorderless(borderless bool) {
-	b.HasBorders = borderless
+// SetHasBorders sets weather or not to show the border.
+func (b *ViewportModel) SetHasBorders(withBorders bool) {
+	b.HasBorders = withBorders
 }
 
-// Update handles UI interactions with the help bubble.
+// Update handles UI interactions when some key is pressed
 func (b ViewportModel) Update(msg tea.Msg) (ViewportModel, tea.Cmd) {
 	var (
 		cmd  tea.Cmd
@@ -164,11 +166,9 @@ func (b ViewportModel) Update(msg tea.Msg) (ViewportModel, tea.Cmd) {
 		b.Viewport, cmd = b.Viewport.Update(msg)
 		cmds = append(cmds, cmd)
 	}
-
 	return b, tea.Batch(cmds...)
 }
 
-// View returns a string representation of the help bubble.
 func (b ViewportModel) View() string {
 	border := lipgloss.NormalBorder()
 
@@ -182,10 +182,5 @@ func (b ViewportModel) View() string {
 		Border(border).
 		BorderForeground(b.BorderColor)
 
-	return bubbleStyle.Render(
-		lipgloss.JoinVertical(
-			lipgloss.Top,
-			b.Viewport.View(),
-			inputStyle.Render(""),
-		))
+	return b.Viewport.View()
 }
