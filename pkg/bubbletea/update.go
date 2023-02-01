@@ -105,7 +105,7 @@ func (b *model) toggleBox() {
 		b.viewportRight.SetBorderColor(b.theme.InactiveBoxBorderColor)
 
 		b.viewportLeft.SetIsActive(true)
-		b.viewportRight.SetBorderColor(b.theme.ActiveBoxBorderColor)
+		b.viewportLeft.SetBorderColor(b.theme.ActiveBoxBorderColor)
 
 	} else {
 		b.viewportLeft.SetIsActive(false)
@@ -115,6 +115,6 @@ func (b *model) toggleBox() {
 		b.viewportLeft.SetBorderColor(b.theme.InactiveBoxBorderColor)
 
 		b.viewportRight.SetIsActive(true)
-		b.viewportLeft.SetBorderColor(b.theme.ActiveBoxBorderColor)
+		b.viewportRight.SetBorderColor(b.theme.ActiveBoxBorderColor)
 	}
 }
