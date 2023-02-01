@@ -13,6 +13,7 @@ const (
 )
 
 // get all the ayaht in a particular page by scanning the pages for a certain page number
+// TODO: make it map for faster access
 func AyahtInPage(surahs *[][]Surah, pageNum int) []Ayah {
 	ayaht := make([]Ayah, 0)
 	for _, surah := range *surahs {
@@ -25,8 +26,19 @@ func AyahtInPage(surahs *[][]Surah, pageNum int) []Ayah {
 	return ayaht
 }
 
+// return a map of page number with all the ayaht inside
+func AyahtInPages(surahs *[][]Surah) map[int][]Ayah {
+	ayahtMap := make(map[int][]Ayah, 0)
+	for _, surah := range *surahs {
+		for _, ayah := range surah[LANG].Ayaht {
+			ayahtMap[ayah.Page] = append(ayahtMap[ayah.Page], ayah)
+		}
+	}
+	return ayahtMap
+}
+
 // return the left and right pages. (as a list)
-func GetPages(ayaht *[][]Surah, currentPage int) ([]Ayah, []Ayah) {
+func GetPages(ayaht map[int][]Ayah, currentPage int) ([]Ayah, []Ayah) {
 
 	var leftPageNum, rightPageNum int
 
@@ -47,7 +59,7 @@ func GetPages(ayaht *[][]Surah, currentPage int) ([]Ayah, []Ayah) {
 		leftPageNum = currentPage + 1
 	}
 
-	return AyahtInPage(ayaht, leftPageNum), AyahtInPage(ayaht, rightPageNum)
+	return ayaht[leftPageNum], ayaht[rightPageNum]
 
 }
 
