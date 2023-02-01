@@ -17,12 +17,6 @@ const AppDir = "quran-go"
 // ConfigFileName is the name of the config file that gets created.
 const ConfigFileName = "config.yml"
 
-// SyntaxThemeConfig represents light and dark syntax themes.
-type SyntaxThemeConfig struct {
-	Light string `yaml:"light"`
-	Dark  string `yaml:"dark"`
-}
-
 // SettingsConfig struct represents the config for the settings.
 type SettingsConfig struct {
 	StartDir      string `yaml:"start_dir"`
