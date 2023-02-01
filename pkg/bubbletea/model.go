@@ -2,7 +2,6 @@ package bubbletea
 
 import (
 	"log"
-	"strconv"
 
 	"github.com/AYehia0/quran-go/pkg/config"
 	"github.com/AYehia0/quran-go/pkg/page"
@@ -16,61 +15,65 @@ type model struct {
 	status        page.Statusbar
 	currentPage   int
 	cursor        int
+	selected      int // 0 for nothing selected, 1 for right, 2 for left
 	ready         bool
-	selected      map[int]struct{}
+	theme         theme.Theme
+	ayaht         *map[int][]quran.Ayah
 }
 
-func New(ayaht *[][]quran.Surah, bookmark quran.Bookmark) model {
+func New(ayaht *map[int][]quran.Ayah, bookmark quran.Bookmark) model {
 
 	cfg, err := config.ParseConfig()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	theme := theme.GetTheme(cfg.Theme.AppTheme)
+	configTheme := theme.GetTheme(cfg.Theme.AppTheme)
 
 	// left and right pages as list of ayaht
-	l, r := quran.GetPages(ayaht, bookmark.CurrentPage)
+	l, r := quran.GetPages(*ayaht, bookmark.CurrentPage)
 
 	// create a viewport
 	viewportLeft, viewportRight := page.New(
 		false,
 		cfg.Settings.Borderless,
-		"Page - "+strconv.Itoa(l[0].Page),
+		theme.GetTitle(l),
 		page.TitleColor{
-			Background: theme.TitleBackgroundColor,
-			Foreground: theme.TitleForegroundColor,
+			Background: configTheme.TitleBackgroundColor,
+			Foreground: configTheme.TitleForegroundColor,
 		},
-		theme.InactiveBoxBorderColor,
+		configTheme.InactiveBoxBorderColor,
 		l,
+		"left",
 	), page.New(
 		false,
 		cfg.Settings.Borderless,
-		"Page - "+strconv.Itoa(r[0].Page),
+		theme.GetTitle(r),
 		page.TitleColor{
-			Background: theme.TitleBackgroundColor,
-			Foreground: theme.TitleForegroundColor,
+			Background: configTheme.TitleBackgroundColor,
+			Foreground: configTheme.TitleForegroundColor,
 		},
-		theme.InactiveBoxBorderColor,
+		configTheme.InactiveBoxBorderColor,
 		r,
+		"right",
 	)
 
 	statusbarModel := page.NewStatus(
 		page.ColorConfig{
-			Foreground: theme.StatusBarSelectedFileForegroundColor,
-			Background: theme.StatusBarSelectedFileBackgroundColor,
+			Foreground: configTheme.StatusBarSelectedFileForegroundColor,
+			Background: configTheme.StatusBarSelectedFileBackgroundColor,
 		},
 		page.ColorConfig{
-			Foreground: theme.StatusBarBarForegroundColor,
-			Background: theme.StatusBarBarBackgroundColor,
+			Foreground: configTheme.StatusBarBarForegroundColor,
+			Background: configTheme.StatusBarBarBackgroundColor,
 		},
 		page.ColorConfig{
-			Foreground: theme.StatusBarTotalFilesForegroundColor,
-			Background: theme.StatusBarTotalFilesBackgroundColor,
+			Foreground: configTheme.StatusBarTotalFilesForegroundColor,
+			Background: configTheme.StatusBarTotalFilesBackgroundColor,
 		},
 		page.ColorConfig{
-			Foreground: theme.StatusBarLogoForegroundColor,
-			Background: theme.StatusBarLogoBackgroundColor,
+			Foreground: configTheme.StatusBarLogoForegroundColor,
+			Background: configTheme.StatusBarLogoBackgroundColor,
 		},
 	)
 	m := model{
@@ -78,7 +81,8 @@ func New(ayaht *[][]quran.Surah, bookmark quran.Bookmark) model {
 		viewportRight: viewportRight,
 		status:        statusbarModel,
 		currentPage:   bookmark.CurrentPage,
-		selected:      make(map[int]struct{}),
+		theme:         configTheme,
+		ayaht:         ayaht,
 	}
 
 	return m

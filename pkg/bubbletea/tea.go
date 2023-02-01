@@ -5,7 +5,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 )
 
-func InitModel(ayaht *[][]quran.Surah, bookmark *quran.Bookmark) model {
+func InitModel(ayaht *map[int][]quran.Ayah, bookmark *quran.Bookmark) model {
 	return New(ayaht, *bookmark)
 }
 
