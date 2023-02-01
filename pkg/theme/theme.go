@@ -1,6 +1,11 @@
 package theme
 
-import "github.com/charmbracelet/lipgloss"
+import (
+	"fmt"
+
+	"github.com/AYehia0/quran-go/pkg/quran"
+	"github.com/charmbracelet/lipgloss"
+)
 
 // Theme represents the properties that make up a theme.
 type Theme struct {
@@ -42,4 +47,8 @@ var themeMap = map[string]Theme{
 // GetTheme returns a theme based on the given name.
 func GetTheme(theme string) Theme {
 	return themeMap["default"]
+}
+
+func GetTitle(page []quran.Ayah) string {
+	return fmt.Sprintf("Page - %d - Juza %d", page[0].Page, page[0].Juz)
 }
