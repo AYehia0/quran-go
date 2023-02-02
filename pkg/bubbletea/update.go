@@ -82,6 +82,10 @@ func (m *model) movePage(dir string) {
 	}
 
 	l, r := quran.GetPages(*m.ayaht, m.currentPage)
+
+	if l == nil || r == nil {
+		return
+	}
 	m.viewportLeft.Entries, m.viewportRight.Entries = l, r
 
 	// update the UI
