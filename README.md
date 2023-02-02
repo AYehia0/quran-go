@@ -19,7 +19,8 @@ The application is in very early stage of development, with messy code and many 
 - [X] ~~Optimize the page search by sorting~~ Throw a [hashmap](https://preview.redd.it/u0x6znp3q5x41.jpg?auto=webp&s=744deb8e8fbde68933f1789976b765e409d97743)
 - [X] Re-Organize the `tea` (The Elm Architecture)
 - [X] Add themes :D
-- [ ] Add more page info to the page title : `surah's name`
+- [X] Add break between surahs
+- [X] Add more page info to the page title : `surah's name`
 - [ ] Select Ayah and add to bookmark
 - [ ] Search Ayah
 - [ ] Highlight Ayah
