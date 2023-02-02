@@ -9,6 +9,10 @@ type Surah struct {
 }
 
 type Ayah struct {
+	NumberSurah   int
+	NameAr        string
+	NameEn        string
+	NumberAyaht   int
 	Text          string `json:"text"`
 	NumberInSurah int    `json:"numberInSurah"`
 	NumberInQuran int    `json:"number"`

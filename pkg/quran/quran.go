@@ -29,8 +29,19 @@ func AyahtInPage(surahs *[][]Surah, pageNum int) []Ayah {
 // return a map of page number with all the ayaht inside
 func AyahtInPages(surahs *[][]Surah) map[int][]Ayah {
 	ayahtMap := make(map[int][]Ayah, 0)
+
+	/*
+	 prints the forth surah (4), in EN (1), the first ayah
+	 fmt.Println((*quranSurahs)[4][1].Ayaht[1].Text)
+	*/
 	for _, surah := range *surahs {
 		for _, ayah := range surah[LANG].Ayaht {
+			// additional info for easier access, not the best way to do it but it depends on the data I have.
+			ayah.NameEn = surah[LANG].NameEn
+			ayah.NameAr = surah[LANG].NameAr
+			ayah.NumberAyaht = surah[LANG].NumberAyaht
+			ayah.NumberSurah = surah[LANG].NumberSurah
+
 			ayahtMap[ayah.Page] = append(ayahtMap[ayah.Page], ayah)
 		}
 	}

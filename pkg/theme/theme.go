@@ -2,6 +2,7 @@ package theme
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/AYehia0/quran-go/pkg/quran"
 	"github.com/charmbracelet/lipgloss"
@@ -49,6 +50,34 @@ func GetTheme(theme string) Theme {
 	return themeMap["default"]
 }
 
+func stringInArray(s string, strings []string) bool {
+	for _, str := range strings {
+		if str == s {
+			return true
+		}
+	}
+	return false
+}
+
+// all the names in the page, MAX I think is 3
+func getSurahNamesInPage(page []quran.Ayah, lang int) string {
+	names := make([]string, 0)
+	for _, ayah := range page {
+		name := ""
+		if lang == 1 {
+			name = ayah.NameEn
+		} else {
+			name = ayah.NameAr
+		}
+
+		if !stringInArray(name, names) {
+			names = append(names, name)
+		}
+	}
+
+	return strings.Join(names, "|")
+}
+
 func GetTitle(page []quran.Ayah) string {
-	return fmt.Sprintf("Page - %d - Juza %d", page[0].Page, page[0].Juz)
+	return fmt.Sprintf("P%d - %d - %s", page[0].Page, page[0].Juz, getSurahNamesInPage(page, 1))
 }

@@ -3,6 +3,7 @@ package page
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/01walid/goarabic"
 	"github.com/AYehia0/quran-go/pkg/quran"
@@ -55,13 +56,24 @@ func generateViewportText(title string, titleColor TitleColor, entries []quran.A
 
 		// FIXME: warping the text to the half width isn't the best soultion, as it displays some werid text in AR
 		row := lipgloss.JoinHorizontal(lipgloss.Top, wordwrap.String(text, min(width/2, keyWidth)))
+
 		content += fmt.Sprintf("%s\n\n", row)
+
+		// add a surah break after the last ayah of the surah, if there are multiple surahs in the page
+		// TODO: generalize the sep for the title
+		surahs := strings.Split(title, "|")
+		if len(surahs) > 1 && ayah.NumberInSurah == ayah.NumberAyaht {
+			surahEndIndecator := "--------------------------"
+			breaker := lipgloss.JoinHorizontal(lipgloss.Top, wordwrap.String(surahEndIndecator, min(width/2, keyWidth)))
+			content += fmt.Sprintf("%s\n\n", breaker)
+		}
 	}
 
 	titleText := lipgloss.NewStyle().Bold(true).
 		Background(titleColor.Background).
 		Foreground(titleColor.Foreground).
 		Border(lipgloss.NormalBorder()).
+		Width(min(keyWidth, width/2)).
 		Padding(0, 1).
 		Italic(true).
 		BorderBottom(true).
