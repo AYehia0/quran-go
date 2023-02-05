@@ -76,9 +76,15 @@ func (m *model) movePage(dir string) {
 	m.viewportRight.GotoTop()
 
 	if dir == "next" {
-		m.currentPage++
+		if m.currentPage == quran.PAGES || m.currentPage == quran.PAGES+1 {
+			return
+		}
+		m.currentPage += 2
 	} else {
-		m.currentPage--
+		if m.currentPage == 1 || m.currentPage == 2 {
+			return
+		}
+		m.currentPage -= 2
 	}
 
 	l, r := quran.GetPages(*m.ayaht, m.currentPage)
