@@ -5,7 +5,13 @@ import (
 	"strings"
 
 	"github.com/AYehia0/quran-go/pkg/quran"
+	"github.com/AYehia0/quran-go/pkg/utils"
 	"github.com/charmbracelet/lipgloss"
+)
+
+const (
+	SurahTitleSep = "|"
+	EndOfSurahSep = "--------------------------"
 )
 
 // Theme represents the properties that make up a theme.
@@ -50,15 +56,6 @@ func GetTheme(theme string) Theme {
 	return themeMap["default"]
 }
 
-func stringInArray(s string, strings []string) bool {
-	for _, str := range strings {
-		if str == s {
-			return true
-		}
-	}
-	return false
-}
-
 // all the names in the page, MAX I think is 3
 func getSurahNamesInPage(page []quran.Ayah, lang int) string {
 	names := make([]string, 0)
@@ -70,12 +67,12 @@ func getSurahNamesInPage(page []quran.Ayah, lang int) string {
 			name = ayah.NameAr
 		}
 
-		if !stringInArray(name, names) {
+		if !utils.StringInArray(name, names) {
 			names = append(names, name)
 		}
 	}
 
-	return strings.Join(names, "|")
+	return strings.Join(names, SurahTitleSep)
 }
 
 func GetTitle(page []quran.Ayah) string {

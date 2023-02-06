@@ -7,6 +7,8 @@ import (
 
 	"github.com/01walid/goarabic"
 	"github.com/AYehia0/quran-go/pkg/quran"
+	"github.com/AYehia0/quran-go/pkg/theme"
+	"github.com/AYehia0/quran-go/pkg/utils"
 	"github.com/charmbracelet/bubbles/viewport"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
@@ -36,17 +38,11 @@ type ViewportModel struct {
 	selected    bool
 }
 
-func min(a, b int) int {
-	if a < b {
-		return a
-	}
-	return b
-}
-
 // generateScreen generates the help text based on the title and entries.
 // generete the text which is going to be displayed in the viewport based on the title and the content
 func generateViewportText(title string, titleColor TitleColor, entries []quran.Ayah, width, height int, dir string) string {
 	content := ""
+	minWidth := utils.Min(width/2, keyWidth)
 
 	for _, ayah := range entries {
 		text := lipgloss.NewStyle().
@@ -55,16 +51,14 @@ func generateViewportText(title string, titleColor TitleColor, entries []quran.A
 			Render(goarabic.RemoveTashkeel(ayah.Text))
 
 		// FIXME: warping the text to the half width isn't the best soultion, as it displays some werid text in AR
-		row := lipgloss.JoinHorizontal(lipgloss.Top, wordwrap.String(text, min(width/2, keyWidth)))
+		row := lipgloss.JoinHorizontal(lipgloss.Top, wordwrap.String(text, minWidth))
 
 		content += fmt.Sprintf("%s\n\n", row)
 
 		// add a surah break after the last ayah of the surah, if there are multiple surahs in the page
-		// TODO: generalize the sep for the title
-		surahs := strings.Split(title, "|")
+		surahs := strings.Split(title, theme.SurahTitleSep)
 		if len(surahs) > 1 && ayah.NumberInSurah == ayah.NumberAyaht {
-			surahEndIndecator := "--------------------------"
-			breaker := lipgloss.JoinHorizontal(lipgloss.Top, wordwrap.String(surahEndIndecator, min(width/2, keyWidth)))
+			breaker := lipgloss.JoinHorizontal(lipgloss.Top, wordwrap.String(theme.EndOfSurahSep, minWidth))
 			content += fmt.Sprintf("%s\n\n", breaker)
 		}
 	}
@@ -73,7 +67,7 @@ func generateViewportText(title string, titleColor TitleColor, entries []quran.A
 		Background(titleColor.Background).
 		Foreground(titleColor.Foreground).
 		Border(lipgloss.NormalBorder()).
-		Width(min(keyWidth, width/2)).
+		Width(minWidth).
 		Padding(0, 1).
 		Italic(true).
 		BorderBottom(true).

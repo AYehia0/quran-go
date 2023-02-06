@@ -21,6 +21,7 @@ The application is in very early stage of development, with messy code and many 
 - [X] Add themes :D
 - [X] Add break between surahs
 - [X] Add more page info to the page title : `surah's name`
+- [ ] Add Surah title highlighted in the viewport.
 - [ ] Select Ayah and add to bookmark
 - [ ] Search Ayah
 - [ ] Highlight Ayah

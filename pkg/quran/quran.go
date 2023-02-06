@@ -12,20 +12,6 @@ const (
 	LANG      = 1   // AR -> 0, EN -> 1
 )
 
-// get all the ayaht in a particular page by scanning the pages for a certain page number
-// TODO: make it map for faster access
-func AyahtInPage(surahs *[][]Surah, pageNum int) []Ayah {
-	ayaht := make([]Ayah, 0)
-	for _, surah := range *surahs {
-		for _, ayah := range surah[LANG].Ayaht {
-			if ayah.Page == pageNum {
-				ayaht = append(ayaht, ayah)
-			}
-		}
-	}
-	return ayaht
-}
-
 // return a map of page number with all the ayaht inside
 func AyahtInPages(surahs *[][]Surah) map[int][]Ayah {
 	ayahtMap := make(map[int][]Ayah, 0)
