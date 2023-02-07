@@ -5,7 +5,7 @@ import (
 )
 
 func (m model) View() string {
-	left, right := m.viewportLeft.View(), m.viewportRight.View()
+	left, right := m.listLeft.View(), m.listRight.View()
 
 	return lipgloss.JoinVertical(lipgloss.Top,
 		lipgloss.JoinHorizontal(lipgloss.Top, left, right),

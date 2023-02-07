@@ -10,15 +10,15 @@ import (
 )
 
 type model struct {
-	viewportLeft  page.ViewportModel
-	viewportRight page.ViewportModel
-	status        page.Statusbar
-	currentPage   int
-	cursor        int
-	selected      int // 0 for nothing selected, 1 for right, 2 for left
-	ready         bool
-	theme         theme.Theme
-	ayaht         *map[int][]quran.Ayah
+	listLeft    page.ListModel
+	listRight   page.ListModel
+	status      page.Statusbar
+	currentPage int
+	cursor      int
+	selected    int // 0 for nothing selected, 1 for right, 2 for left
+	ready       bool
+	theme       theme.Theme
+	ayaht       *map[int][]quran.Ayah
 }
 
 func New(ayaht *map[int][]quran.Ayah, bookmark quran.Bookmark) model {
@@ -33,8 +33,7 @@ func New(ayaht *map[int][]quran.Ayah, bookmark quran.Bookmark) model {
 	// left and right pages as list of ayaht
 	l, r := quran.GetPages(*ayaht, bookmark.CurrentPage)
 
-	// create a viewport
-	viewportLeft, viewportRight := page.New(
+	leftBox, rightBox := page.NewList(
 		false,
 		cfg.Settings.Borderless,
 		theme.GetTitle(l),
@@ -43,9 +42,11 @@ func New(ayaht *map[int][]quran.Ayah, bookmark quran.Bookmark) model {
 			Foreground: configTheme.TitleForegroundColor,
 		},
 		configTheme.InactiveBoxBorderColor,
+		configTheme.SelectedTreeItemColor,
+		configTheme.TitleBackgroundColor,
+		configTheme.TitleForegroundColor,
 		l,
-		"left",
-	), page.New(
+	), page.NewList(
 		false,
 		cfg.Settings.Borderless,
 		theme.GetTitle(r),
@@ -54,8 +55,10 @@ func New(ayaht *map[int][]quran.Ayah, bookmark quran.Bookmark) model {
 			Foreground: configTheme.TitleForegroundColor,
 		},
 		configTheme.InactiveBoxBorderColor,
+		configTheme.SelectedTreeItemColor,
+		configTheme.TitleBackgroundColor,
+		configTheme.TitleForegroundColor,
 		r,
-		"right",
 	)
 
 	statusbarModel := page.NewStatus(
@@ -77,12 +80,12 @@ func New(ayaht *map[int][]quran.Ayah, bookmark quran.Bookmark) model {
 		},
 	)
 	m := model{
-		viewportLeft:  viewportLeft,
-		viewportRight: viewportRight,
-		status:        statusbarModel,
-		currentPage:   bookmark.CurrentPage,
-		theme:         configTheme,
-		ayaht:         ayaht,
+		listLeft:    leftBox,
+		listRight:   rightBox,
+		status:      statusbarModel,
+		currentPage: bookmark.CurrentPage,
+		theme:       configTheme,
+		ayaht:       ayaht,
 	}
 
 	return m
